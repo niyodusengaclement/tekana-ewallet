@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { AuthDto, SigninDto } from './dto';
-
+import { AuthDto, OtpDto, SigninDto } from './dto';
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -9,8 +10,22 @@ export class AuthController {
   signup(@Body() dto: AuthDto) {
     return this.authService.signup(dto);
   }
+
+  @HttpCode(HttpStatus.OK)
   @Post('signin')
   signin(@Body() dto: SigninDto) {
     return this.authService.signin(dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('otp-verification')
+  otpVerification(@Body() dto: OtpDto) {
+    return this.authService.otpVerification(dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('resend-otp/:phone')
+  resendOtp(@Param('phone') phone: string) {
+    return this.authService.resendOtp(phone);
   }
 }

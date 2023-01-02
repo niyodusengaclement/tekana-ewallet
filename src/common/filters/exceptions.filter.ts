@@ -18,18 +18,22 @@ export class ExceptionsFilter implements ExceptionFilter {
     const res = ctx.getResponse();
     this.loggerService.verbose(`REQUEST: ${req.method} ${res.url}`);
     const reqTime = Date.now();
-    const isHttp = exception instanceof HttpException;
-    const status = isHttp
-      ? exception.getStatus()
-      : HttpStatus.INTERNAL_SERVER_ERROR;
-    if (status === 500) Logger.error(exception);
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) Logger.error(exception);
     this.loggerService.verbose(
       `RESPONSE: ${status} ${req.url} time-taken: ${Date.now() - reqTime} ms`,
     );
     this.loggerService.error(exception.stack);
-    res.status(status).json({
-      statusCode: status,
-      error: isHttp ? exception.message : 'Internal Server Error',
-    });
+    const response = exception.message
+      ? {
+          statusCode: status,
+          message: exception.message,
+          error: exception.name,
+        }
+      : exception.getResponse();
+    res.status(status).json(response);
   }
 }

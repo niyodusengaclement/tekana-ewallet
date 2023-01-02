@@ -2,10 +2,11 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto, SigninDto } from './dto';
+import { AuthDto, OtpDto, SigninDto } from './dto';
 import * as argon from 'argon2';
 import axios from 'axios';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
@@ -40,21 +41,22 @@ export class AuthService {
         }
         const { otpExpiresAt, otp, hashedOtp } =
           await this.otpService.generateOtp();
-        console.log({ otpExpiresAt, otp, hashedOtp });
 
-        // const sms = await (await this.otpService.sendOtp(dto.phone, otp)).data;
-        const user = await this.prisma.user.create({
-          data: {
-            ...dto,
-            email: dto.email,
-            password,
-            otpExpiresAt,
-            otp: hashedOtp,
-          },
-          select: {
-            id: true,
-          },
-        });
+        const [user] = await Promise.all([
+          this.prisma.user.create({
+            data: {
+              ...dto,
+              email: dto.email,
+              password,
+              otpExpiresAt,
+              otp: hashedOtp,
+            },
+            select: {
+              id: true,
+            },
+          }),
+          this.otpService.sendOtp(dto.phone, otp),
+        ]);
         return {
           message: `We sent you an OTP on ${dto.phone}. OTP expires in 5 min`,
           data: {
@@ -130,5 +132,65 @@ export class AuthService {
         identificationNumber,
       },
     });
+  }
+
+  async otpVerification(dto: OtpDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        phone: dto.phone,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.isPhoneVerified) {
+      throw new BadRequestException('Phone is already verified');
+    }
+    const hashMatch = await argon.verify(user.otp, `${dto.otp}`);
+    if (new Date() > user.otpExpiresAt || !hashMatch) {
+      throw new UnauthorizedException('Invalid OTP or OTP has expired');
+    }
+    await this.prisma.user.update({
+      data: {
+        isPhoneVerified: true,
+      },
+      where: { id: user.id },
+    });
+    return {
+      message: 'You phone was verified successfully',
+      data: {
+        id: user.id,
+      },
+    };
+  }
+
+  async resendOtp(phone: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { phone },
+    });
+    if (!user) {
+      throw new NotFoundException(`User with phone ${phone} was not found`);
+    }
+    if (user.isPhoneVerified) {
+      throw new BadRequestException('Phone is already verified');
+    }
+    const { otpExpiresAt, otp, hashedOtp } =
+      await this.otpService.generateOtp();
+    await Promise.all([
+      this.otpService.sendOtp(phone, otp),
+      this.prisma.user.update({
+        data: {
+          otpExpiresAt,
+          otp: hashedOtp,
+        },
+        where: { id: user.id },
+      }),
+    ]);
+    return {
+      message: `We sent you an OTP on ${phone}. OTP expires in 5 min`,
+      data: {
+        id: user.id,
+      },
+    };
   }
 }

@@ -67,6 +67,7 @@ export class AuthDto {
   @ApiProperty({
     type: 'string',
     description: 'Phone number without + sign',
+    default: '250788000000',
     required: true,
   })
   phone: string;
