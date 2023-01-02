@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
-export class SigninDto {
+export class OtpDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -12,11 +12,17 @@ export class SigninDto {
   })
   phone: string;
 
-  @IsString()
+  @IsNumber()
+  @Min(100000, {
+    message: 'OTP should be six digits',
+  })
+  @Max(999999, {
+    message: 'OTP should be six digits',
+  })
   @IsNotEmpty()
   @ApiProperty({
-    type: 'string',
+    type: 'number',
     required: true,
   })
-  password: string;
+  otp: number;
 }
