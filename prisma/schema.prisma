@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum Currency {
+  USD
+}
+
+enum TransactionStatus {
+  pending
+  completed
+  failed
+}
+
+enum TransactionType {
+  send
+  withdraw
+  topup
+}
+
+model User {
+  id        String       @id @default(uuid())
+
+  firstName String
+  lastName  String
+  nationalId String @unique
+  email String? @unique
+  country String
+  phone String @unique
+  gender Gender
+  dob DateTime
+  isEmailVerified Boolean @default(false)
+  isPhoneVerified Boolean @default(false)
+  password  String
+  otp String?
+  otpExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wallets Wallet[]
+  transactions Transaction[]
+  @@map("users")
+}
+
+model Wallet {
+  id        String       @id @default(uuid())
+
+  name String? @default("My Wallet")
+  balance Int @default(0)
+  currency Currency @default(USD)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  transactions Transaction[]
+  @@map("wallets")
+}
+
+model Transaction {
+  id        String       @id @default(uuid())
+
+  transactionAmount Int
+  transactionFee Int @default(0)
+  totalTransactionAmount Int
+  destinationWalletId String?
+  paymentRef String?
+  comment String?
+  otp String?
+  otpExpiresAt DateTime?
+  currency Currency @default(USD)
+  transactionType TransactionType 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+
+  sourceWalletId String
+  wallet   Wallet @relation(fields: [sourceWalletId], references: [id])
+  @@map("transactions")
+}
+
+model Fee {
+  id        String       @id @default(uuid())
+
+  transactionType TransactionType
+  currency Currency @default(USD)
+  percentageRate Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([transactionType, currency])
+  @@map("fees")
+}

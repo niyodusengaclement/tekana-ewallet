@@ -1,0 +1,40 @@
+services:
+  api:
+    container_name: tekana-ewallet-api
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    env_file:
+        - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5431/${POSTGRES_DB}?schema=public
+    volumes:
+      - .:/usr/src/app
+    command: yarn start:dev
+    ports:
+      - 9000:9000
+    depends_on:
+      - postgres
+    networks:
+      - tekana-network
+
+  postgres:
+    image: postgres:alpine
+    container_name: tekana-ewallet-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports: 
+      - '5431:5432'
+    volumes:
+      - tekana-ewallet:/var/lib/postgresql/data
+    networks:
+      - tekana-network
+
+volumes:
+  tekana-ewallet:
+networks:
+  tekana-network:
