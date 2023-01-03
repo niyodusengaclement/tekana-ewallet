@@ -17,7 +17,7 @@ export class WalletService {
           ...dto,
           // Bonus for new wallet
           balance: 5000,
-          userId: userId,
+          userId,
         },
         select: {
           id: true,

@@ -1,5 +1,5 @@
 import { Logger, Module } from '@nestjs/common';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
@@ -8,8 +8,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { LoggerInterceptor, ResponseInterceptor } from './common/interceptors';
 import { OtpModule } from './otp/otp.module';
-import { ExceptionsFilter } from './common/filters';
 import { WalletModule } from './wallet/wallet.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -24,6 +24,7 @@ import { WalletModule } from './wallet/wallet.module';
     AuthModule,
     OtpModule,
     WalletModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [
@@ -40,10 +41,6 @@ import { WalletModule } from './wallet/wallet.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: ExceptionsFilter,
     },
   ],
 })

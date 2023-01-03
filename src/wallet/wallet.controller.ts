@@ -8,11 +8,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { LoggedUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { WalletDto } from './dto';
 import { WalletService } from './wallet.service';
 
+@SkipThrottle()
 @ApiTags('Wallet')
 @Controller('wallets')
 @UseGuards(JwtGuard)
