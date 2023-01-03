@@ -8,10 +8,6 @@ export const TRANSACTION_STATUS: Array<string> = [
   'completed',
   'failed',
 ];
-export const MAIL_HOST = 'MAIL_HOST';
-export const MAIL_USER = 'MAIL_USER';
-export const MAIL_PASSWORD = 'MAIL_PASSWORD';
-export const MAIL_FROM = 'MAIL_FROM';
 
 export const SMS_USER = 'SMS_USER';
 export const SMS_PASSWORD = 'SMS_PASSWORD';

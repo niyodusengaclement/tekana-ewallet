@@ -228,7 +228,7 @@ export class TransactionService {
     };
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_NOON)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCron() {
     await this.prisma.transaction.updateMany({
       data: {
