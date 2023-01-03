@@ -47,7 +47,7 @@ export class TransactionController {
 
   @HttpCode(HttpStatus.OK)
   @SkipThrottle(false)
-  @Patch(':id')
+  @Patch('confirm/:id')
   confirmTransaction(
     @Param('id', ParseUUIDPipe) transactionId: string,
     @Body() dto: TransactionOtpDto,
