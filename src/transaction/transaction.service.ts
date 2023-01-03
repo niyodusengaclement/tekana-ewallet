@@ -190,9 +190,40 @@ export class TransactionService {
         transactionType: true,
       },
     });
+
+    const sourceWallet = await this.findWallet(transaction.sourceWalletId);
+    if (!sourceWallet) {
+      throw new NotFoundException(
+        `Source wallet ${transaction.sourceWalletId} not found`,
+      );
+    }
+    if (sourceWallet && sourceWallet.userId !== transaction.userId) {
+      throw new NotFoundException(
+        `Source wallet ${transaction.sourceWalletId} not found`,
+      );
+    }
+
+    if (
+      sourceWallet &&
+      +sourceWallet.balance < +transaction.totalTransactionAmount
+    ) {
+      throw new NotFoundException(
+        `You don't have enough funds to complete this transaction`,
+      );
+    }
+
+    const wallet = await this.prisma.wallet.update({
+      data: {
+        balance: +sourceWallet.balance - +transaction.totalTransactionAmount,
+      },
+      where: { id: transaction.sourceWalletId },
+    });
     return {
       message: 'Transaction completed successfully',
-      data,
+      data: {
+        ...data,
+        newWalletBalance: +wallet.balance,
+      },
     };
   }
 }
