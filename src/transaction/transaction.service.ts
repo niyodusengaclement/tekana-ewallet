@@ -1,9 +1,11 @@
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import {
   Currency,
   TransactionStatus,
@@ -17,6 +19,7 @@ import { TransactionDto, TransactionOtpDto } from './dto';
 
 @Injectable()
 export class TransactionService {
+  private readonly logger = new Logger(TransactionService.name);
   constructor(private prisma: PrismaService, private otpService: OtpService) {}
   async transactionRequest(userId: string, phone: string, dto: TransactionDto) {
     try {
@@ -53,8 +56,6 @@ export class TransactionService {
 
       const { otpExpiresAt, otp, hashedOtp } =
         await this.otpService.generateOtp();
-
-      console.log({ otpExpiresAt, otp, hashedOtp });
 
       const [transaction] = await Promise.all([
         this.prisma.transaction.create({
@@ -225,5 +226,20 @@ export class TransactionService {
         newWalletBalance: +wallet.balance,
       },
     };
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_NOON)
+  async handleCron() {
+    await this.prisma.transaction.updateMany({
+      data: {
+        transactionStatus: TransactionStatus.failed,
+      },
+      where: {
+        otpExpiresAt: {
+          lte: new Date(),
+        },
+        transactionStatus: TransactionStatus.pending,
+      },
+    });
   }
 }
