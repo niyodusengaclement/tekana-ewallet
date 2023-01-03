@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { LoggerInterceptor, ResponseInterceptor } from './common/interceptors';
 import { OtpModule } from './otp/otp.module';
 import { ExceptionsFilter } from './common/filters';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ExceptionsFilter } from './common/filters';
     PrismaModule,
     AuthModule,
     OtpModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [

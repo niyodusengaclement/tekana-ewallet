@@ -69,6 +69,7 @@ model Wallet {
   user   User @relation(fields: [userId], references: [id])
 
   transactions Transaction[]
+  @@unique([userId, currency])
   @@map("wallets")
 }
 

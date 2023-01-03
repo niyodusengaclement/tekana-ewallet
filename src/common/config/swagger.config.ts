@@ -12,6 +12,8 @@ const config = new DocumentBuilder()
   .setVersion('1.0.0')
   .addTag('Home')
   .addTag('Authentication')
+  .addTag('Wallet')
+  .addTag('Transactions')
   .build();
 
 const customOptions: SwaggerCustomOptions = {

@@ -27,7 +27,7 @@ export class ExceptionsFilter implements ExceptionFilter {
       `RESPONSE: ${status} ${req.url} time-taken: ${Date.now() - reqTime} ms`,
     );
     this.loggerService.error(exception.stack);
-    const response = exception.message
+    const response = !exception?.getResponse()?.message
       ? {
           statusCode: status,
           message: exception.message,
