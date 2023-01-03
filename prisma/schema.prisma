@@ -60,7 +60,7 @@ model Wallet {
   id        String       @id @default(uuid())
 
   name String? @default("My Wallet")
-  balance Int @default(0)
+  balance Decimal @default(0)
   currency Currency @default(USD)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,16 +76,17 @@ model Wallet {
 model Transaction {
   id        String       @id @default(uuid())
 
-  transactionAmount Int
-  transactionFee Int @default(0)
-  totalTransactionAmount Int
+  transactionAmount Decimal
+  transactionFee Decimal @default(0)
+  totalTransactionAmount Decimal
   destinationWalletId String?
   paymentRef String?
   comment String?
   otp String?
   otpExpiresAt DateTime?
   currency Currency @default(USD)
-  transactionType TransactionType 
+  transactionType TransactionType
+  transactionStatus TransactionStatus @default(pending)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,7 +104,7 @@ model Fee {
 
   transactionType TransactionType
   currency Currency @default(USD)
-  percentageRate Int @default(0)
+  percentageRate Decimal @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

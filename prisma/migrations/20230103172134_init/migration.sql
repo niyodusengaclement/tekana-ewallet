@@ -36,8 +36,8 @@ CREATE TABLE "users" (
 CREATE TABLE "wallets" (
     "id" TEXT NOT NULL,
     "name" TEXT DEFAULT 'My Wallet',
-    "balance" INTEGER NOT NULL DEFAULT 0,
-    "currency" TEXT NOT NULL DEFAULT 'USD',
+    "balance" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "currency" "Currency" NOT NULL DEFAULT 'USD',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
@@ -48,16 +48,17 @@ CREATE TABLE "wallets" (
 -- CreateTable
 CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
-    "transactionAmount" INTEGER NOT NULL,
-    "transactionFee" INTEGER NOT NULL DEFAULT 0,
-    "totalTransactionAmount" INTEGER NOT NULL,
+    "transactionAmount" DECIMAL(65,30) NOT NULL,
+    "transactionFee" DECIMAL(65,30) NOT NULL DEFAULT 0,
+    "totalTransactionAmount" DECIMAL(65,30) NOT NULL,
     "destinationWalletId" TEXT,
     "paymentRef" TEXT,
     "comment" TEXT,
     "otp" TEXT,
     "otpExpiresAt" TIMESTAMP(3),
-    "currency" "Currency" NOT NULL,
+    "currency" "Currency" NOT NULL DEFAULT 'USD',
     "transactionType" "TransactionType" NOT NULL,
+    "transactionStatus" "TransactionStatus" NOT NULL DEFAULT 'pending',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
@@ -69,9 +70,9 @@ CREATE TABLE "transactions" (
 -- CreateTable
 CREATE TABLE "fees" (
     "id" TEXT NOT NULL,
-    "serviceType" TEXT NOT NULL,
-    "currency" "Currency" NOT NULL,
-    "percentageRate" INTEGER NOT NULL DEFAULT 0,
+    "transactionType" "TransactionType" NOT NULL,
+    "currency" "Currency" NOT NULL DEFAULT 'USD',
+    "percentageRate" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -86,6 +87,12 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "wallets_userId_currency_key" ON "wallets"("userId", "currency");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "fees_transactionType_currency_key" ON "fees"("transactionType", "currency");
 
 -- AddForeignKey
 ALTER TABLE "wallets" ADD CONSTRAINT "wallets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
