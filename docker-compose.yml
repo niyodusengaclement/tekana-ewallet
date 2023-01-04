@@ -1,6 +1,6 @@
 services:
-  api:
-    container_name: tekana-ewallet-api
+  dev:
+    container_name: tekana-ewallet-dev
     build:
       dockerfile: Dockerfile
       context: .
@@ -12,6 +12,23 @@ services:
     volumes:
       - .:/usr/src/app
     command: yarn start:dev
+    ports:
+      - 9000:9000
+    depends_on:
+      - postgres
+    networks:
+      - tekana-network
+  prod:
+    container_name: tekana-ewallet-prod
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production
+    env_file:
+        - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5431/${POSTGRES_DB}?schema=public
+    command: yarn start:prod
     ports:
       - 9000:9000
     depends_on:
