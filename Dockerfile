@@ -33,7 +33,7 @@ RUN yarn build
 
 ENV NODE_ENV production
 
-RUN yarn install --immutable --immutable-cache --check-cache --production && yarn cache clean --force && yarn db:seed
+RUN yarn install --immutable --immutable-cache --check-cache --production && yarn cache clean --force && yarn prisma:seed
 
 USER node
 
