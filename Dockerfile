@@ -13,7 +13,7 @@ RUN yarn install --immutable --immutable-cache --check-cache
 
 COPY --chown=node:node . .
 
-RUN yarn db:init
+RUN yarn db:init && yarn db:migrate
 
 USER node
 
@@ -33,7 +33,7 @@ RUN yarn build
 
 ENV NODE_ENV production
 
-RUN yarn install --immutable --immutable-cache --check-cache --production && yarn cache clean --force
+RUN yarn install --immutable --immutable-cache --check-cache --production && yarn cache clean --force && yarn db:migrate && yarn db:deploy
 
 USER node
 

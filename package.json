@@ -21,7 +21,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "npx prisma generate",
     "prisma:seed": "npx prisma db seed",
-    "db:init": "yarn prisma:generate && yarn prisma:seed"
+    "db:deploy": "npx prisma migrate deploy",
+    "db:init": "yarn prisma:generate",
+    "db:migrate": "npx prisma migrate dev && yarn prisma:seed"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
