@@ -13,7 +13,7 @@ RUN yarn install --immutable --immutable-cache --check-cache
 
 COPY --chown=node:node . .
 
-RUN yarn db:init && yarn db:migrate
+RUN yarn db:init
 
 USER node
 
@@ -33,7 +33,7 @@ RUN yarn build
 
 ENV NODE_ENV production
 
-RUN yarn install --immutable --immutable-cache --check-cache --production && yarn cache clean --force && yarn db:migrate && yarn db:deploy
+RUN yarn install --immutable --immutable-cache --check-cache --production && yarn cache clean --force
 
 USER node
 
@@ -44,4 +44,4 @@ FROM node:18-alpine as production
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 
-CMD [ "node", "dist/src/main.js" ]
+CMD [ "node", "dist/src/main.js", ";", "yarn", "db:migrate", ";", "yarn", "db:deploy"]

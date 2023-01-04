@@ -23,7 +23,7 @@
     "prisma:seed": "npx prisma db seed",
     "db:deploy": "npx prisma migrate deploy",
     "db:init": "yarn prisma:generate",
-    "db:migrate": "npx prisma migrate dev && yarn prisma:seed"
+    "db:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
