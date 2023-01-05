@@ -1,13 +1,99 @@
 # TEKANA E-WALLET
 Tekana eWallet is an app used to transfer money from one wallet to another all over the world
+### GitHub repository link
+[Tekana eWallet/Repo](https://github.com/niyodusengaclement/tekana-ewallet)
 
-## Installation
+### Heroku app Link
+[Tekana eWallet/Heroku app Link](http://tekana-ewallet.herokuapp.com/api-docs)
+
+--------------------------------------------------------------------------
+
+## Project Requirements
+- User should signup by filling all required information, when validation rules are respected and then new record is created otherwise response is shown with error happened underneath.
+
+- To meet KYC (Know Your Customer) procedure we should verify user identity. For Rwandese users only,  `NIDA API` should be invoked to validate National ID then we should also send OTP validation to confirm user phone number. (We might validate international identity and phone number in the next version)
+
+- User should be able to regenerate New OTP when previously sent otp was not recevied or expired.
+
+- Registered user should use phone number and password to login yet response body show status code  along with appropriate message when user credentials are valid, a JWT token is returned to authenticate user to the protected routes.
+
+- Authorized user should be able to create one wallet by currency later on providing name and currency.
+
+- Authorized user should be able his or her list wallets 
+
+- Authorized user should be able to get his or her specific wallet by using wallet id.
+- We would love to do work on topup and withraw your wallet to MoMo or Bank acount but due to the small amount of time we may work on this in the future (Next release😎)
+
+- Sender should provide  `destination wallet id, transaction amount and currency` then s/he should recieve an OTP to confirm transaction in 5 minutes otherwise transaction fail.
+- Authorized user should be able to get a list of his/her transactions
+- Authorized user should get a specific transaction detail by providing its ID
+
+
+ ## Features 
+|Method| Endpoint | Description |
+| ------ | ------ |--|
+| **POST**  | /api/auth/signup | user registration |
+| **POST** |  /api/auth/Signin | user signin |
+| **POST** |  /api/auth/otp-verification' | Verify otp |
+| **GET**  | /api/auth/resend-otp/{phone} | Verifying otp by using phone number |
+| **POST** |  /api/wallets | Create new wallet |
+| **GET**  | /api/wallets | Get list of wallets |
+| **GET**  | /api/wallets/by-id/{id} | Get wallet details by id |
+| **POST** |  /api/transactions |  Create new token|
+| **GET**  | /api/transactions |  Fetch list of transactions |
+| **GET**  | /api/transactions/{id} |  Fetch specific transaction by id |
+| **PATCH** |  /api/transactions/confirm/{id} |  Confirm transaction |
+
+--------------------------------------------------------------------------
+## Tools
+
+### Language
+```
+Typescript
+```
+### Server Environment
+```
+ *NestJS* (NestJS is a framework for building efficient, scalable Node.js web applications. )
+ ```
+ ### Database
+```
+ PostgreSQL
+```
+ ### ORM
+```
+ Prisma
+```
+### Containerization
+```
+ Docker
+```
+### Testing Framework and Assertion library
+```
+ Jest
+```
+### Testing Framework and Assertion library
+```
+ Jest
+```
+### Continuous Integration
+```
+GitHub Actions
+```
+## Getting Started
+Follow instructions below to have this project running in your local machine
+### Prerequisites
+You must have NodeJS, and NestJS installed
+Clone this repository ```https://github.com/niyodusengaclement/tekana-ewallet.git``` or download the zip file.
+
+### Installing
+After cloning this repository to your local machine, cd into its root directory using your terminal and run the following commands
 
 ```bash
 $ yarn
 ```
 
-## Running the app
+Yarn will install all dependencies.
+### Running the app
 
 ```bash
 # development
@@ -20,7 +106,7 @@ $ yarn start:dev
 $ yarn start:prod
 ```
 
-## Test
+### Test
 
 ```bash
 # unit tests

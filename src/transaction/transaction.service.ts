@@ -219,6 +219,7 @@ export class TransactionService {
       },
       where: { id: transaction.sourceWalletId },
     });
+    
     return {
       message: 'Transaction completed successfully',
       data: {
