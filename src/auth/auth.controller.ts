@@ -7,7 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { AuthDto, OtpDto, SigninDto } from './dto';
@@ -37,5 +37,12 @@ export class AuthController {
   @Get('resend-otp/:phone')
   resendOtp(@Param('phone') phone: string) {
     return this.authService.resendOtp(phone);
+  }
+
+  @ApiExcludeEndpoint()
+  @HttpCode(HttpStatus.OK)
+  @Get('logs')
+  readLogs() {
+    return this.authService.readLogs();
   }
 }

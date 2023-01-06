@@ -19,6 +19,9 @@ import {
 } from 'src/common/constants';
 import { JwtPayload } from 'src/common/interfaces';
 import { OtpService } from 'src/otp/otp.service';
+import { existsSync, readFile } from 'fs';
+import { promisify } from 'util';
+import * as path from 'path';
 
 @Injectable()
 export class AuthService {
@@ -110,7 +113,7 @@ export class AuthService {
       throw new UnauthorizedException('Your phone is not verified');
     }
 
-    const { id, firstName, lastName, email, phone } = user;
+    const { id, firstName, lastName, email, phone } = user || {};
 
     const token = await this.generateToken({
       id,
@@ -201,5 +204,17 @@ export class AuthService {
         id: user.id,
       },
     };
+  }
+
+  async readLogs() {
+    const pathString = path.join(__dirname, '../../../logs/errors.log');
+    if (!existsSync(pathString)) {
+      throw new BadRequestException('No error files was found');
+    }
+    const readLogsData = promisify(readFile);
+
+    const data = await readLogsData(pathString);
+
+    return { data: data.toString('utf-8').split('\u001b') };
   }
 }
