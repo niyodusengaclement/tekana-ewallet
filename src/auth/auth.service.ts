@@ -109,7 +109,16 @@ export class AuthService {
     if (hashMatch && !user.isPhoneVerified) {
       throw new UnauthorizedException('Your phone is not verified');
     }
-    const token = await this.generateToken(user);
+
+    const { id, firstName, lastName, email, phone } = user;
+
+    const token = await this.generateToken({
+      id,
+      firstName,
+      lastName,
+      email,
+      phone,
+    });
     return {
       message: 'You have logged in successfully',
       data: {

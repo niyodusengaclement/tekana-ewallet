@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   Logger,
@@ -86,22 +87,33 @@ export class TransactionService {
   }
 
   async findAllUserTransactions(userId: string) {
-    const data = await this.prisma.transaction.findMany({
-      where: {
-        userId,
-      },
-      select: {
-        id: true,
-        transactionAmount: true,
-        totalTransactionAmount: true,
-        transactionFee: true,
-        sourceWalletId: true,
-        destinationWalletId: true,
-        transactionStatus: true,
-        transactionType: true,
-      },
-    });
-    return { data };
+    return await this.findTransactions(true, { userId });
+  }
+
+  async findUserTransactionsByStatus(userId: string, status: string) {
+    const statuses = [
+      TransactionStatus.completed,
+      TransactionStatus.failed,
+      TransactionStatus.pending,
+    ];
+    if (!statuses.toLocaleString().includes(status)) {
+      throw new BadRequestException(`Status should be one of ${statuses}`);
+    }
+    const options = {
+      userId,
+      transactionStatus: status,
+      transactionType: TransactionType.send,
+    };
+    return await this.findTransactions(true, options);
+  }
+
+  async findAllReceivedTransactions(walletId: string) {
+    const options = {
+      destinationWalletId: walletId,
+      transactionStatus: TransactionStatus.completed,
+      transactionType: TransactionType.send,
+    };
+    return await this.findTransactions(false, options);
   }
 
   async findOne(transactionId: string) {
@@ -118,6 +130,7 @@ export class TransactionService {
         destinationWalletId: true,
         transactionStatus: true,
         transactionType: true,
+        comment: true,
       },
     });
     if (!data) {
@@ -227,6 +240,24 @@ export class TransactionService {
         newWalletBalance: +wallet.balance,
       },
     };
+  }
+
+  async findTransactions(isSender: boolean, options?: object) {
+    const data = await this.prisma.transaction.findMany({
+      where: options || {},
+      select: {
+        id: true,
+        transactionAmount: true,
+        totalTransactionAmount: isSender,
+        transactionFee: isSender,
+        sourceWalletId: true,
+        destinationWalletId: true,
+        transactionStatus: isSender,
+        transactionType: true,
+        comment: true,
+      },
+    });
+    return { data };
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)

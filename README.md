@@ -1,3 +1,4 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/0b8dcd3138fe86ea14ec/maintainability)](https://codeclimate.com/github/niyodusengaclement/tekana-ewallet/maintainability)
 # TEKANA E-WALLET
 Tekana eWallet is an app used to transfer money from one wallet to another all over the world
 ### GitHub repository link
@@ -13,7 +14,7 @@ Tekana eWallet is an app used to transfer money from one wallet to another all o
 
 - To meet KYC (Know Your Customer) procedure we should verify user identity. For Rwandese users only,  `NIDA API` should be invoked to validate National ID then we should also send OTP validation to confirm user phone number. (We might validate international identity and phone number in the next version)
 
-- User should be able to regenerate New OTP when previously sent otp was not recevied or expired.
+- User should be able to regenerate New OTP when previously sent OTP was not recevied or expired.
 
 - Registered user should use phone number and password to login yet response body show status code  along with appropriate message when user credentials are valid, a JWT token is returned to authenticate user to the protected routes.
 
@@ -24,8 +25,11 @@ Tekana eWallet is an app used to transfer money from one wallet to another all o
 - Authorized user should be able to get his or her specific wallet by using wallet id.
 - We would love to do work on topup and withraw your wallet to MoMo or Bank acount but due to the small amount of time we may work on this in the future (Next release😎)
 
-- Sender should provide  `destination wallet id, transaction amount and currency` then s/he should recieve an OTP to confirm transaction in 5 minutes otherwise transaction fail.
-- Authorized user should be able to get a list of his/her transactions
+- Sender should provide  `destination wallet id, transaction amount and currency` then s/he should recieve an OTP to confirm transaction in 5 minutes otherwise transaction fail. Here cron job should be running every 10 minutes to check transactions that have not been confirmed and mark them as failed.
+
+- Authorized user should be able to get a list of his/her transfer transactions
+- Authorized user should be able to get a list of his/her transfer transactions by status
+- Authorized user should be able to get a list of his/her wallet received transactions
 - Authorized user should get a specific transaction detail by providing its ID
 
 
@@ -34,13 +38,15 @@ Tekana eWallet is an app used to transfer money from one wallet to another all o
 | ------ | ------ |--|
 | **POST**  | /api/auth/signup | user registration |
 | **POST** |  /api/auth/Signin | user signin |
-| **POST** |  /api/auth/otp-verification' | Verify otp |
-| **GET**  | /api/auth/resend-otp/{phone} | Verifying otp by using phone number |
+| **POST** |  /api/auth/otp-verification | Verify OTP |
+| **GET**  | /api/auth/resend-otp/{phone} | Resend an OTP |
 | **POST** |  /api/wallets | Create new wallet |
 | **GET**  | /api/wallets | Get list of wallets |
 | **GET**  | /api/wallets/by-id/{id} | Get wallet details by id |
-| **POST** |  /api/transactions |  Create new token|
-| **GET**  | /api/transactions |  Fetch list of transactions |
+| **POST** |  /api/transactions |  Create new transaction|
+| **GET**  | /api/transactions/sent |  Fetch list of user transfer transactions |
+| **GET**  | /api/transactions/sent/{status} |  Fetch list of user transfer transactions by status |
+| **GET**  | /api/transactions/received/{walletId} |  Fetch list of wallet received transactions |
 | **GET**  | /api/transactions/{id} |  Fetch specific transaction by id |
 | **PATCH** |  /api/transactions/confirm/{id} |  Confirm transaction |
 
