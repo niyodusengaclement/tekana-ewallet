@@ -17,6 +17,7 @@ import { JwtGuard } from 'src/auth/guard';
 import { LoggedUser } from 'src/auth/decorator';
 import { TransactionDto, TransactionOtpDto } from './dto';
 import { SkipThrottle } from '@nestjs/throttler';
+import { TransactionStatus } from '@prisma/client';
 
 @SkipThrottle()
 @ApiTags('Transactions')
@@ -35,9 +36,22 @@ export class TransactionController {
     return this.transactionService.transactionRequest(userId, phone, dto);
   }
 
-  @Get()
+  @Get('sent')
   findUserTransactions(@LoggedUser('id') userId: string) {
     return this.transactionService.findAllUserTransactions(userId);
+  }
+
+  @Get('sent/:status')
+  findUserTransactionsByStatus(
+    @LoggedUser('id') userId: string,
+    @Param('status') status: string,
+  ) {
+    return this.transactionService.findUserTransactionsByStatus(userId, status);
+  }
+
+  @Get('received/:walletId')
+  findReceivedTransactions(@Param('walletId', ParseUUIDPipe) walletId: string) {
+    return this.transactionService.findAllReceivedTransactions(walletId);
   }
 
   @Get(':id')
