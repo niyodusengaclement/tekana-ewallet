@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto, OtpDto, SigninDto } from './dto';
-import * as argon from 'argon2';
+import * as bcrypt from 'bcryptjs';
 import axios from 'axios';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
@@ -32,8 +32,9 @@ export class AuthService {
     private otpService: OtpService,
   ) {}
   async signup(dto: AuthDto) {
-    const password = await argon.hash(dto.password);
     try {
+      const salt = await bcrypt.genSalt();
+      const password = await bcrypt.hash(dto.password, salt);
       if (dto?.country?.toLowerCase() === 'rwanda') {
         const info = await this.validateNidInfo(dto.nationalId);
 
@@ -105,7 +106,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const hashMatch = await argon.verify(user.password, dto.password);
+    const hashMatch = await bcrypt.compare(dto.password, user.password);
     if (!hashMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -158,8 +159,11 @@ export class AuthService {
     if (user.isPhoneVerified) {
       throw new BadRequestException('Phone is already verified');
     }
-    const hashMatch = await argon.verify(user.otp, `${dto.otp}`);
-    if (new Date() > user.otpExpiresAt || !hashMatch) {
+    const hashMatch = await bcrypt.compare(`${dto.otp}`, user.otp);
+    if (
+      (new Date() > user.otpExpiresAt || !hashMatch) &&
+      dto.otp !== 123456 // For testing purpose 123456 is always valid (to be removed in production mode)
+    ) {
       throw new UnauthorizedException('Invalid OTP or OTP has expired');
     }
     await this.prisma.user.update({

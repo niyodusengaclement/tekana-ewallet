@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import * as argon from 'argon2';
+import * as bcrypt from 'bcryptjs';
 import { SMS_PASSWORD, SMS_SENDER, SMS_USER } from 'src/common/constants';
 
 @Injectable()
@@ -15,10 +15,12 @@ export class OtpService {
     const randomNbr = Math.floor(100000 + Math.random() * 900000);
     const otpExpiresAt = new Date();
     otpExpiresAt.setMinutes(otpExpiresAt.getMinutes() + 5);
+    const salt = await bcrypt.genSalt();
+    const hashedOtp = await bcrypt.hash(`${randomNbr}`, salt);
     return {
       otpExpiresAt,
       otp: randomNbr,
-      hashedOtp: await argon.hash(`${randomNbr}`),
+      hashedOtp,
     };
   }
 
