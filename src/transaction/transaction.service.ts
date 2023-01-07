@@ -13,7 +13,7 @@ import {
   TransactionType,
   Wallet,
 } from '@prisma/client';
-import * as argon from 'argon2';
+import * as bcrypt from 'bcryptjs';
 import { OtpService } from 'src/otp/otp.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TransactionDto, TransactionOtpDto } from './dto';
@@ -184,8 +184,11 @@ export class TransactionService {
         `Transaction with id ${transactionId} is not pending`,
       );
     }
-    const hashMatch = await argon.verify(transaction.otp, `${dto.otp}`);
-    if (new Date() > transaction.otpExpiresAt || !hashMatch) {
+    const hashMatch = await bcrypt.compare(`${dto.otp}`, transaction.otp);
+    if (
+      (new Date() > transaction.otpExpiresAt || !hashMatch) &&
+      dto.otp !== 123456 // For testing purpose 123456 is always valid (to be removed in production mode)
+    ) {
       throw new UnauthorizedException('Invalid OTP or OTP has expired');
     }
     const data = await this.prisma.transaction.update({

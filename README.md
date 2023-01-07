@@ -23,9 +23,10 @@ Tekana eWallet is an app used to transfer money from one wallet to another all o
 - Authorized user should be able his or her list wallets 
 
 - Authorized user should be able to get his or her specific wallet by using wallet id.
-- We would love to do work on topup and withraw your wallet to MoMo or Bank acount but due to the small amount of time we may work on this in the future (Next release😎)
+- We would love to do work on topup and withraw your wallet to MoMo or Bank acount but due to the small amount of time we may work on this in the future (Next release😎). For now when a user creates a new wallet s/he should get a bonus of 5000 USD to use (It's too much money, but for the sake of test) 
 
 - Sender should provide  `destination wallet id, transaction amount and currency` then s/he should recieve an OTP to confirm transaction in 5 minutes otherwise transaction fail. Here cron job should be running every 10 minutes to check transactions that have not been confirmed and mark them as failed.
+- If transaction is confirmed, destination wallet we should remove transaction amount and fee to the source wallet and add transaction amount to the destination wallet. (Fee is our income😛)
 
 - Authorized user should be able to get a list of his/her transfer transactions
 - Authorized user should be able to get a list of his/her transfer transactions by status
@@ -99,7 +100,7 @@ $ yarn
 ```
 
 Yarn will install all dependencies.
-### Running the app
+### Running the app locally with yarn
 
 ```bash
 # development
@@ -111,6 +112,19 @@ $ yarn start:dev
 # production mode
 $ yarn start:prod
 ```
+### Running the app locally with docker
+```bash
+# new docker version
+$ docker compose up --build
+
+# old docker version
+$ docker-compose up --build
+```
+
+
+> If you need some env variables like SMS KEYS, NIDA API ... you can contact me clementmistico@gmail.com or +250780282575.
+> For testing purpose 123456 is always valid OTP (to be removed in production mode), on either phone verification or transaction confirmation.
+
 
 ### Test
 

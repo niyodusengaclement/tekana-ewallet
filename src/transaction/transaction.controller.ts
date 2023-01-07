@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
   ParseUUIDPipe,
   HttpCode,
@@ -17,7 +16,6 @@ import { JwtGuard } from 'src/auth/guard';
 import { LoggedUser } from 'src/auth/decorator';
 import { TransactionDto, TransactionOtpDto } from './dto';
 import { SkipThrottle } from '@nestjs/throttler';
-import { TransactionStatus } from '@prisma/client';
 
 @SkipThrottle()
 @ApiTags('Transactions')
