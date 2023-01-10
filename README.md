@@ -1,3 +1,15 @@
+# Some Feedback from Lionel
+
+* Reusability: Not recommended to hardcode numbers or string in the code when they should be in a constant file
+* Perf: The function `transactionRequest` should not do 2 sequential await if they could be done at once. (Asynchronouse power of Nodejs)
+* Logic: The fn `confirmTransaction` should update the balances at once and in a transaction [Here](https://docs.nestjs.com/techniques/database#typeorm-transactions). 
+* Perf: Can use Redis to cache some of the values that do not change often...Example `calculateTransactionFee` fn 
+
+
+Etc. ... Courage
+
+
+
 [![Maintainability](https://api.codeclimate.com/v1/badges/0b8dcd3138fe86ea14ec/maintainability)](https://codeclimate.com/github/niyodusengaclement/tekana-ewallet/maintainability)
 # TEKANA E-WALLET
 Tekana eWallet is an app used to transfer money from one wallet to another all over the world
